@@ -88,5 +88,54 @@ ggplot(fgseaResTidy, aes(reorder(pathway, NES), NES)) +
        title="Principais Vias NES de GSEA") + 
   theme_minimal()
 
+# Genes em cada uma das vias.
+pathways.hallmark %>% 
+  enframe("pathway", "SYMBOL") %>% 
+  unnest() %>% 
+  inner_join(res, by="SYMBOL")
+
+
+# Vias KEGG: 
+# http://software.broadinstitute.org/gsea/msigdb/download_file.jsp?filePath=/resources/msigdb/6.2/c2.cp.kegg.v6.2.symbols.gmt
+fgsea(pathways=gmtPathways("c2.cp.kegg.v6.2.symbols.gmt"), ranks, nperm=1000) %>% 
+  as_tibble() %>% 
+  arrange(padj)
+
+
+# Vias miR:
+fgsea(pathways=gmtPathways("c3.mir.v6.2.symbols.gmt"), ranks, nperm=1000) %>% 
+  as_tibble() %>% 
+  arrange(padj)
+
+# Vias GO:
+fgsea(pathways=gmtPathways("c5.all.v6.2.symbols.gmt"), ranks, nperm=1000) %>% 
+  as_tibble() %>% 
+  arrange(padj)
+
+
+##---------- Teste usando GO:
+pathways.hallmark <- gmtPathways("c5.all.v6.2.symbols.gmt")
+
+# Se quiser ver todos de uma vez, descomente abaixo:
+pathways.hallmark
+
+# Mostrar as vias e, dentro delas, os primeiros genes. 
+pathways.hallmark %>% head() %>% lapply(head)
+
+fgseaRes <- fgsea(pathways=pathways.hallmark, stats=ranks, nperm=1000)
+
+# Tidy de resultados:
+fgseaResTidy <- fgseaRes %>%
+  as_tibble() %>%
+  arrange(desc(NES))
+
+
+# Uma tabela mais interessante:
+fgseaResTidy %>% 
+  dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>% 
+  arrange(padj) %>% DT::datatable()
+
+
+
 
 
