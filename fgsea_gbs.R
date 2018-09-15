@@ -4,14 +4,8 @@
 ##---------------------
 library(tidyverse)
 library(fgsea)
-library(DESeq2)
-library(edgeR)
-library(dplyr)
-library(plyr)
-library(clusterProfiler)
 library(org.Hs.eg.db)
 library(ggplot2)
-library(fgsea)
 library(DT)
 
 # Arquivo com ENSEMBL IDs.
