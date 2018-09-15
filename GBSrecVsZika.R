@@ -112,6 +112,7 @@ pca
 
 #extracting the results from Differential expression analysis 
 contr_RECzika <- as.data.frame(results(dds, contrast=c('condition','REC','ZIKA')))
+
 #creating a new column with the gene SYMBOL name
 contr_RECzika$genes <- rownames(contr_RECzika)
 #removing the NAs from padj column
@@ -147,7 +148,8 @@ colnames(DEGs_RECzika)[7] <- "ensembl_id"
 #DEGs_RECzika <- merge(DEGs_RECzika, dict, by="ensembl_id", all.x=T, no.dups = T)
 
 DEGs_RECzika <- join(DEGs_RECzika, dict, by = "ensembl_id", type = "left", match= "first")
-
+# Criar tabela que possa ser usada com fgsea:
+write.csv(DEGs_RECzika, 'DEGs_RECzika_14-09-2018.csv', row.names = FALSE)
 
 
 GO_RECzika <- enrichGO(DEGs_RECzika$symbol,
