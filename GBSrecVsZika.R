@@ -179,7 +179,4 @@ GO_GBSctl_tab$ord <- c(1:nrow(GO_GBSrec_ZIKV_tab))
 write.csv(GO_GBSctl_tab, 'GO_GBSctl_tab_14-09-2018.csv', row.names = FALSE)
 
 # Formas de salvar as tabelas de GO.
-write.csv(GO_RECzika, 'GO_GBS-rec_vs_ZIKV.csv', row.names = FALSE)
-write.table(as.data.frame(head(sleuth_significant, 400)), sep = "\t", "zika_significant_wt_3.txt")
-write.table(as.data.frame(GO_RECzika_tab, sep = '\t', 'GO_GBS-rec_vs_ZIKV_14-09-2018.txt', row.names = F))
-
+write.table(as.data.frame(contr_RECzika), sep = ",", "contr_RECzika.txt", row.names = FALSE)
