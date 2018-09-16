@@ -25,7 +25,6 @@ ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
 ens2symbol <- as_tibble(ens2symbol)
 
 # Confirmar:
-ens2symbol
 head(ens2symbol, 10)
 
 # Unir a coluna SYMBOL ao data frame:
@@ -42,6 +41,7 @@ res2 <- res %>%
         group_by(SYMBOL) 
 
 # Confirmando:
+head(res2, 3)
 summary(res2)
 
 ## 2. Usando do fgsea.
@@ -109,3 +109,39 @@ fgseaRes[['pathway']][1:10]
 
 # Observar as 10 primeiras vias (Tidy).
 fgseaResTidy[['pathway']][1:10]
+
+# Estatisticas:
+# Fazer tabela para várias vias selecionadas.
+topPathwaysUP <- fgseaRes[ES > 0][head(order(pval), n = 30), pathway]
+topPathwaysDOWN <- fgseaRes[ES < 0][head(order(pval), n = 30), pathway]
+
+# Plot
+topPathways <- fgseaRes[head(order(pval), n=30)][order(NES), pathway] # Talvez pegando apenas DOWN. Usar desc()
+plotGseaTable(pathways = pathways.GObp[topPathways], 
+              fgseaRes, stats=ranks, gseaParam = 0.5)
+
+topPathwaysUP
+topPathwaysDOWN
+
+# Forma correta:
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n = 15), pathway]
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n = 15), pathway]
+
+# Top pathways:
+topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
+
+# Plot:
+plotGseaTable(pathways = pathways.GObp[topPathways], 
+              fgseaRes, stats=ranks, gseaParam = 0.5)
+
+#### Tidy
+topPathwaysUP <- fgseaResTidy[ES > 0][head(order(pval), n = 30), pathway]
+topPathwaysDOWN <- fgseaResTidy[ES < 0][head(order(pval), n = 30), pathway]
+
+# Plot
+topPathways <- fgseaResTidy[head(order(pval), n=30)][order(NES), pathway]
+plotGseaTable(pathways = pathways.GObp[topPathways], 
+              fgseaResTidy, stats=ranks, gseaParam = 0.5)
+
+topPathwaysUP
+topPathwaysDOWN
