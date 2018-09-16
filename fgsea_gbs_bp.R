@@ -66,6 +66,9 @@ pathways.hallmark %>% head() %>% lapply(head)
 
 fgseaRes <- fgsea(pathways=pathways.hallmark, stats=ranks, nperm=1000)
 
+# 10 vias iniciais:
+fgseaRes[['pathway']][1:10]
+
 # Tidy de resultados:
 fgseaResTidy <- fgseaRes %>%
   as_tibble() %>%
@@ -76,6 +79,13 @@ fgseaResTidy <- fgseaRes %>%
 fgseaResTidy %>% 
   dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>% 
   arrange(padj) %>% DT::datatable()
+
+# Exibir colunas pathway com NES e padj:
+fgseaRes[1:10,c("pathway", "NES","padj")]
+fgseaRes[1:10][['pathway']]
+fgseaResTidy[1:10,c("pathway", "NES","padj")]
+fgseaResTidy[fgseaResTidy$pval < 0.01, ]
+fgseaResTidy[fgseaResTidy$pval < 0.01, ]$pathway
 
 
 # Estatisticas:
@@ -95,7 +105,7 @@ topPathwaysDOWN
 ###------------------
 # Selecionar por pval < 0.01:
 fgseaResTidy[fgseaResTidy$pval < 0.01, ]$pathway
-head(fgseaRes[order(pval), ], 100)
+head(fgseaRes[order(pval), ], 50)
 
 # Selecionar por padj < 0.05:
 fgseaResTidy[fgseaResTidy$padj < 0.05, ]$pathway
