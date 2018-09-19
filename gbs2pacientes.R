@@ -1,7 +1,7 @@
 ##----------------------------------------
 # IMT 
-# GBS Vs ZIKV com Controls
-# Data: 19/09/2018
+# GBS-rec Vs ZIKV com Controls
+# Data: 18/09/2018
 # Washington
 # GSEA - fgsea Bioconductor
 ##----------------------------------------
@@ -14,7 +14,7 @@ library(org.Hs.eg.db)
 library(ggplot2)
 source("cooltable.R") #function to retrieve Up and Down genes at clusterprofiler data
 
-#  Carregar o arquivo de contagem de genes (featurecounts):
+# Carregar o arquivo de contagem de genes (featurecounts):
 countdata <- read.table("featureCounts_out.txt", header=TRUE, row.names=1, check.names = FALSE, stringsAsFactors=F)
 
 
@@ -29,12 +29,8 @@ rm(countdata_sex)
 colnames(countdata) <- gsub("\\.[sb]am$", "", colnames(countdata))
 
 # Filtrar amostras.
-countdata <- countdata %>% dplyr::select(grep("01.", names(countdata)), #GBS
-                                         grep("02.", names(countdata)), #GBS
-                                         grep("04.", names(countdata)), #GBS
-                                         grep("13.", names(countdata)), #GBS
-                                         grep("14.", names(countdata)), #GBS
-                                         grep("25.", names(countdata)), #GBS
+countdata <- countdata %>% dplyr::select(grep("07.", names(countdata)), #GBS_pairZ
+                                         grep("16.", names(countdata)), #GBS_pairZ
                                          grep("12.", names(countdata)), #12_ZIKA
                                          grep("24.", names(countdata)), #24_ZIKA
                                          grep("36.", names(countdata)), #36_ZIKA
@@ -52,13 +48,12 @@ countdata <- as.matrix(countdata)
 
 
 # condition - especificar replicatas e grupos.
-(condition <- factor(c(rep("GBS", 48),
-                       rep("ZIKA", 32),
-                       rep("CTL", 48)
+(condition <- factor(c(rep("GBSpairZ", 16),
+                       rep("ZIKA", 32), 
+                       rep("CTL", 48) 
 )
 )
 )
-
 
 # Gerar o coldata.
 (coldata <- data.frame(row.names=colnames(countdata), condition))
@@ -67,12 +62,8 @@ countdata <- as.matrix(countdata)
 dds <- DESeqDataSetFromMatrix(countData=countdata, colData=coldata, design=~condition)
 
 # Juntar as 8 replicatas.
-dds$sample <-  factor(c(rep("01.lane", 8), 
-                        rep("02.lane", 8), 
-                        rep("04.lane", 8),  
-                        rep("13.lane", 8), 
-                        rep("14.lane", 8),
-                        rep("25.lane", 8),
+dds$sample <-  factor(c(rep("07.lane", 8), 
+                        rep("16.lane", 8),
                         rep("12.lane", 8), 
                         rep("24.lane", 8), 
                         rep("36.lane", 8), 
@@ -87,9 +78,10 @@ dds$sample <-  factor(c(rep("01.lane", 8),
 )
 
 
-dds$run <- paste0("run",1:128) 
+dds$run <- paste0("run",1:96) 
 
 ddsColl <- collapseReplicates(dds, dds$sample, dds$run, renameCols = TRUE)
+
 
 
 # Filtrar por counts insignificantes.
@@ -115,11 +107,11 @@ pca <- plotPCA(rld, ntop = nrow(counts(dds)),returnData=F)
 pca
 
 # Extrair os resultados da análise de DE.
-contr_GBS_zika <- as.data.frame(results(dds, contrast=c('condition','GBS','ZIKA')))
+contr_GBS_zika <- as.data.frame(results(dds, contrast=c('condition','GBSpairZ','ZIKA')))
 
 ###----------------------- GSEA - Arquivo 1 ---------------------
 # Criar csv para fgsea para contr_GBS_zika:
-write.csv(contr_GBS_zika, 'contr_GBS_vs_zika_GSEA.csv')
+write.csv(contr_GBS_zika, 'contr_GBSrecZ_GSEA.csv')
 ###---------------------------------------------------------------
 
 # Criar uma nova coluna com os nomes (SYMBOL) dos genes.
@@ -138,9 +130,9 @@ DEGs_GBS_zika <- subset(contr_GBS_zika, padj <= 0.05 & abs(log2FoldChange) > 1)
 
 # Volcanoplot
 with(as.data.frame(contr_GBS_zika[!(-log10(contr_GBS_zika$padj) == 0), ]), plot(log2FoldChange,-log10(padj), pch=16, axes=T,
-                                        xlim = c(-6,6), ylim = c(0,4),                                    
-                                        xlab = NA, ylab = "-Log10(Pvalue-Adjusted)", main = "GBS vs ZIKA"
-                                                                            
+                                                                                xlim = c(-6,6), ylim = c(0,4),                                    
+                                                                                xlab = NA, ylab = "-Log10(Pvalue-Adjusted)", main = "GBS vs ZIKA"
+                                                                                
 )
 )
 
@@ -162,25 +154,18 @@ DEGs_GBS_zika <- join(DEGs_GBS_zika, dict, by = "ensembl_id", type = "left", mat
 
 
 GO_RECzika <- enrichGO(DEGs_GBS_zika$symbol,
-                      OrgDb = org.Hs.eg.db,
-                      keyType = "SYMBOL",
-                      qvalueCutoff = 0.05
+                       OrgDb = org.Hs.eg.db,
+                       keyType = "SYMBOL",
+                       qvalueCutoff = 0.05
 )
 
 GO_RECzika_tab <- cool_table_GO(GO_RECzika,
                                 subset(DEGs_GBS_zika$symbol, DEGs_GBS_zika$log2FoldChange > 0),
                                 subset(DEGs_GBS_zika$symbol, DEGs_GBS_zika$log2FoldChange < 0)
-                                )
+)
 
 
 GO_RECzika_tab <- subset(GO_RECzika_tab, qvalue < 0.05)
-#keeping only those therms with qvalue < 0.05 
-GO_GBSctl_tab <- subset(GO_GBSrec_ZIKV_tab, GO_GBSrec_ZIKV_tab$qvalue < 0.05) #creating a orer for GO therms GO_GBSctl_tab$ord <- c(1:nrow(GO_GBSctl_tab))
-
-
-GO_GBSctl_tab$ord <- c(1:nrow(GO_GBSrec_ZIKV_tab))
-write.csv(GO_GBSctl_tab, 'GO_GBSctl_tab_14-09-2018.csv', row.names = FALSE)
-
 
 # Retirando as colunas gene_id e 'symbol' para fgsea:
 DEGs_GBS_zika$gene_id <- NULL
@@ -191,3 +176,4 @@ DEGs_GBS_zika$symbol <- NULL
 write.csv(DEGs_GBS_zika, 'DEGs_GBS_zika_18-09-2018.csv', row.names = FALSE)
 # Este arquivo será usado.
 ###----------------------------------------------------------------------------
+
