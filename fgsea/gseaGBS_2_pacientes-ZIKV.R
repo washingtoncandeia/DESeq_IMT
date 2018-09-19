@@ -1,9 +1,9 @@
 ##---------------------------
 # Usando fgsea em GBS
-# Data: 18/09/2018
+# Data: 19/09/2018
 # Washington Candeia
 # GSEA: GO Biological Process
-# GBS (rec) x ZIKV
+# GBS (2pacientes) x ZIKV
 ##---------------------------
 library(tidyverse)
 library(fgsea)
@@ -14,7 +14,7 @@ library(DT)
 # Arquivo com ENSEMBL IDs.
 ## 1. Criar coluna SYMBOL contendo símbolos dos genes 
 #  associados aos IDs Ensembl.
-res <- read_csv('tab/contr_GBS-rec_GSEA_2pacientes.csv')
+res <- read_csv('tab/contr_GBSrecZ_GSEA.csv')
 
 # Anotações dos símbolos a partir do Ensembl.
 ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
@@ -36,13 +36,13 @@ head(res, 10)
 
 # Pegar SYMBOL e stat e remover NAs
 res2 <- res %>%  
-  dplyr::select(SYMBOL, stat) %>% 
+  dplyr::select(SYMBOL, stat, padj) %>% 
   na.omit() %>% 
   distinct() %>%  
   group_by(SYMBOL) 
 
 # Confirmando:
-head(res2, 3)
+head(res2, 10)
 summary(res2)
 
 ## 2. Usando do fgsea.
@@ -67,24 +67,21 @@ fgseaRes <- fgsea(pathways=pathways.GObp, stats=ranks, nperm=10000) #maxSize=500
 head(fgseaRes, 3)
 
 # Estatisticas:
-# Fazer tabela para várias vias selecionadas.
-topPathwaysUP <- fgseaRes[ES > 0][head(order(pval), n = 30), pathway]
-topPathwaysUP
-
-# Down
-topPathwaysDOWN <- fgseaRes[ES < 0][head(order(pval), n = 30), pathway]
-topPathwaysDOWN
-
 ## Fazendo contraste entre Up e Down
-topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 15), pathway]
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n = 15), pathway]
 
-topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 15), pathway]
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n = 15), pathway]
 
 topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
 
+# Plot
 plotGseaTable(pathways = pathways.GObp[topPathways], 
               fgseaRes, stats=ranks, gseaParam = 0.2)
 
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 30), pathway]
+topPathwaysUp
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 30), pathway]
+topPathwaysDown
 
 # Plots de vias específicas.
 # Up:

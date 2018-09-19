@@ -67,14 +67,6 @@ fgseaRes <- fgsea(pathways=pathways.GObp, stats=ranks, nperm=10000) #maxSize=500
 head(fgseaRes, 3)
 
 # Estatisticas:
-# Fazer tabela para várias vias selecionadas.
-topPathwaysUP <- fgseaRes[ES > 0][head(order(pval), n = 30), pathway]
-topPathwaysUP
-
-# Down
-topPathwaysDOWN <- fgseaRes[ES < 0][head(order(pval), n = 30), pathway]
-topPathwaysDOWN
-
 ## Fazendo contraste entre Up e Down
 topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 15), pathway]
 
@@ -82,9 +74,15 @@ topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 15), pathway]
 
 topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
 
+# Plot
 plotGseaTable(pathways = pathways.GObp[topPathways], 
               fgseaRes, stats=ranks, gseaParam = 0.2)
 
+
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 15), pathway]
+topPathwaysUp
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 15), pathway]
+topPathwaysDown
 
 # Plots de vias específicas.
 # Up:

@@ -36,7 +36,7 @@ head(res, 10)
 
 # Pegar SYMBOL e stat e remover NAs
 res2 <- res %>%  
-  dplyr::select(SYMBOL, stat) %>% 
+  dplyr::select(SYMBOL, stat, padj) %>% 
   na.omit() %>% 
   distinct() %>%  
   group_by(SYMBOL) 
@@ -51,57 +51,56 @@ ranks <- tibble::deframe(res2)
 
 # Carregar as vias em uma lista de nomes a partir do MSigDB.
 # Seria do data('examplePathways')
-pathways.GObp <- gmtPathways('symbols/h.all.v6.2.symbols.gmt')
+pathways.hallmark <- gmtPathways('symbols/h.all.v6.2.symbols.gmt')
 
 # Se quiser ver todos de uma vez, descomente abaixo:
-head(pathways.GObp, 3)
+head(pathways.hallmark, 3)
 
 # Mostrar as vias e, dentro delas, os primeiros genes. 
-pathways.GObp %>% head() %>% lapply(head)
+pathways.hallmark %>% head() %>% lapply(head)
 
 # Usando a função fgsea
-fgseaRes <- fgsea(pathways=pathways.GObp, stats=ranks, nperm=10000) #maxSize=500)
+fgseaRes <- fgsea(pathways=pathways.hallmark, stats=ranks, nperm=10000) #maxSize=500)
 
 # Funcionou
 head(fgseaRes, 3)
 
 # Estatisticas:
-# Fazer tabela para várias vias selecionadas.
-topPathwaysUP <- fgseaRes[ES > 0][head(order(pval), n = 30), pathway]
-topPathwaysUP
-
-# Down
-topPathwaysDOWN <- fgseaRes[ES < 0][head(order(pval), n = 30), pathway]
-topPathwaysDOWN
-
 ## Fazendo contraste entre Up e Down
-topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 15), pathway]
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n = 15), pathway]
 
-topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 15), pathway]
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n = 15), pathway]
 
 topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
 
-plotGseaTable(pathways = pathways.GObp[topPathways], 
+plotGseaTable(pathways = pathways.hallmark[topPathways], 
               fgseaRes, stats=ranks, gseaParam = 0.2)
 
 
+# Fazer tabela para várias vias selecionadas.
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n = 30), pathway]
+topPathwaysUp
+
+# Down
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n = 30), pathway]
+topPathwaysDown
 # Plots de vias específicas.
 # Up:
-plotEnrichment(pathways.GObp[["HALLMARK_PI3K_AKT_MTOR_SIGNALING"]],
+plotEnrichment(pathways.hallmark[["HALLMARK_PI3K_AKT_MTOR_SIGNALING"]],
                stats=ranks) + labs(title="HALLMARK_PI3K_AKT_MTOR_SIGNALING")
 
-plotEnrichment(pathways.GObp[["HALLMARK_INFLAMMATORY_RESPONSE"]],
+plotEnrichment(pathways.hallmark[["HALLMARK_INFLAMMATORY_RESPONSE"]],
                stats=ranks) + labs(title="HALLMARK_INFLAMMATORY_RESPONSE")
 
-plotEnrichment(pathways.GObp[[ "HALLMARK_IL6_JAK_STAT3_SIGNALING"]],
+plotEnrichment(pathways.hallmark[[ "HALLMARK_IL6_JAK_STAT3_SIGNALING"]],
                stats=ranks) + labs(title= "HALLMARK_IL6_JAK_STAT3_SIGNALING")
 
 # Down:
-plotEnrichment(pathways.GObp[["HALLMARK_INTERFERON_GAMMA_RESPONSE"]],
+plotEnrichment(pathways.hallmark[["HALLMARK_INTERFERON_GAMMA_RESPONSE"]],
                stats=ranks) + labs(title="HALLMARK_INTERFERON_GAMMA_RESPONSE")
 
 
-plotEnrichment(pathways.GObp[["HALLMARK_APOPTOSIS"]],
+plotEnrichment(pathways.hallmark[["HALLMARK_APOPTOSIS"]],
                stats=ranks) + labs(title="HALLMARK_APOPTOSIS")
 
 

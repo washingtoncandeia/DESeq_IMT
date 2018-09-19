@@ -15,7 +15,7 @@ library(DT)
 # Arquivo com ENSEMBL IDs.
 ## 1. Criar coluna SYMBOL contendo símbolos dos genes 
 #  associados aos IDs Ensembl.
-res <- read_csv('contr_GBS_vs_zika_GSEA.csv')
+res <- read_csv('tab/contr_GBS_vs_zika_GSEA.csv')
 
 # Anotações dos símbolos a partir do Ensembl.
 ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
@@ -78,8 +78,11 @@ topPathwaysDOWN
 
 ## Fazendo contraste entre Up e Down
 topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 15), pathway]
+topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n= 30), pathway]
+
 
 topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 15), pathway]
+topPathwaysDown <- fgseaRes[ES < 0][head(order(pval), n= 30), pathway]
 
 topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
 
