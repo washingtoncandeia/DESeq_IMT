@@ -1,6 +1,6 @@
 ##---------------------------
 # Usando fgsea em GBS
-# Data: 18/09/2018
+# Data: 22/09/2018
 # Washington Candeia
 # GSEA: GO Biological Process
 # GBS (doentes) x ZIKV
