@@ -21,13 +21,18 @@ ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
                                     columns="SYMBOL",
                                     keytype="ENSEMBL")
 
-# Criar a coluna de símbolos a partir dos IDs Ensembl, da primeira coluna.
+# Criar a coluna de símbolos a partir dos IDs Ensembl da primeira coluna.
+# as_tibble: Coerce lists and matrices to data frames.
+# https://tibble.tidyverse.org/
+# Tibble é uma forma modernizada de data frames.
 ens2symbol <- as_tibble(ens2symbol)
 
 # Confirmar:
 ens2symbol
 head(ens2symbol, 10)
 
+# Unir a coluna SYMBOL ao data frame a ser analisado (res).
+# inner_join: Funçao de dplyr usada para juntar tiblle 'ens2symbol' com 'res'.
 # Unir a coluna SYMBOL ao data frame:
 res <- inner_join(res, ens2symbol, by = c('ensembl_id'='ENSEMBL'))
 
@@ -35,8 +40,11 @@ res <- inner_join(res, ens2symbol, by = c('ensembl_id'='ENSEMBL'))
 head(res, 10)
 
 # Pegar SYMBOL e stat e remover NAs
-res2 <- res %>%  dplyr::select(SYMBOL, stat) %>% 
-  na.omit() %>% distinct() %>%  group_by(SYMBOL)
+res2 <- res %>%  
+  dplyr::select(SYMBOL, stat) %>% 
+  na.omit() %>% 
+  distinct() %>%  
+  group_by(SYMBOL) 
 
 res2
 
