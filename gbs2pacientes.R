@@ -1,7 +1,7 @@
 ##----------------------------------------
 # IMT 
 # GBS-rec Vs ZIKV com Controls
-# Data: 18/09/2018
+# Data: 26/09/2018
 # Washington
 # GSEA - fgsea Bioconductor
 ##----------------------------------------
@@ -29,18 +29,18 @@ rm(countdata_sex)
 colnames(countdata) <- gsub("\\.[sb]am$", "", colnames(countdata))
 
 # Filtrar amostras.
-countdata <- countdata %>% dplyr::select(grep("07.", names(countdata)), #GBS_pairZ
-                                         grep("16.", names(countdata)), #GBS_pairZ
-                                         grep("12.", names(countdata)), #12_ZIKA
-                                         grep("24.", names(countdata)), #24_ZIKA
-                                         grep("36.", names(countdata)), #36_ZIKA
-                                         grep("48.", names(countdata)), #48_ZIKA
-                                         grep("10.", names(countdata)), #control
-                                         grep("11.", names(countdata)), #control
-                                         grep("19.", names(countdata)), #control
-                                         grep("20.", names(countdata)), #control
-                                         grep("33.", names(countdata)), #control
-                                         grep("34.", names(countdata))  #control
+countdata <- countdata %>% dplyr::select(grep("07.", names(countdata)), # GBS_pairZika
+                                         grep("16.", names(countdata)), # GBS_pairZika
+                                         grep("12.", names(countdata)), # 12_ZIKA
+                                         grep("24.", names(countdata)), # 24_ZIKA
+                                         grep("36.", names(countdata)), # 36_ZIKA
+                                         grep("48.", names(countdata)), # 48_ZIKA
+                                         grep("10.", names(countdata)), # control
+                                         grep("11.", names(countdata)), # control
+                                         grep("19.", names(countdata)), # control
+                                         grep("20.", names(countdata)), # control
+                                         grep("33.", names(countdata)), # control
+                                         grep("34.", names(countdata))  # control
 )
 
 
@@ -48,8 +48,7 @@ countdata <- as.matrix(countdata)
 
 
 # condition - especificar replicatas e grupos.
-(condition <- factor(c(rep("GBSpairZ", 16),
-                       rep("ZIKA", 32), 
+(condition <- factor(c(rep("GBSpairZika", 48), 
                        rep("CTL", 48) 
 )
 )
@@ -107,7 +106,7 @@ pca <- plotPCA(rld, ntop = nrow(counts(dds)),returnData=F)
 pca
 
 # Extrair os resultados da análise de DE.
-contr_GBS_zika <- as.data.frame(results(dds, contrast=c('condition','GBSpairZ','ZIKA')))
+contr_GBS_zika <- as.data.frame(results(dds, contrast=c('condition', 'GBSpairZika','ZIKA')))
 
 ###----------------------- GSEA - Arquivo 1 ---------------------
 # Criar csv para fgsea para contr_GBS_zika:
