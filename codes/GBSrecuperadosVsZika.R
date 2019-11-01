@@ -57,7 +57,7 @@ countdata <- as.matrix(countdata)
 
 
 # 6. Condition - especificar replicatas e grupos.
-(condition <- factor(c(rep("REC",72), #1
+(condition <- factor(c(rep("GBS_REC",72), #1
                        rep("ZIKA",32), #9
                        rep("CTL",48) #10
 )
@@ -125,11 +125,11 @@ pca <- plotPCA(rld, ntop = nrow(counts(dds)),returnData=F)
 pca
 
 # 15. Extrair os resultados da análise de DE.
-contr_RECzika <- as.data.frame(results(dds, contrast=c('condition','REC','ZIKA')))
+contr_RECzika <- as.data.frame(results(dds, contrast=c('condition','GBS_REC','ZIKA')))
 
 ###----------------------- GSEA - Arquivo 1 ---------------------
 # Criar csv para fgsea para contr_GBS_zika:
-write.csv(contr_RECzika, 'contr_GBS-recuperados_GSEA.csv')
+write.csv(contr_RECzika, 'contr_GBS-recuperados_GSEA_2019.csv')
 ###---------------------------------------------------------------
 
 # 16. Criar uma nova coluna com os nomes (SYMBOLS) dos genes.
