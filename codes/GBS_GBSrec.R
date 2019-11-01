@@ -56,7 +56,7 @@ countdata <- countdata %>% dplyr::select(grep("01.", names(countdata)), #GBS
 countdata <- as.matrix(countdata)
 # 6. Condition - especificar replicatas e grupos.
 (condition <- factor(c(rep("GBS",48),  # n=6
-                       rep("REC",72),  # n=7
+                       rep("GBS_REC",72),  # n=7
                        rep("CTL",48)   # n=6
 )
 )
@@ -123,7 +123,7 @@ pca <- plotPCA(rld, ntop = nrow(counts(dds)),returnData=F)
 pca
 
 # 15. Extrair os resultados da análise de DE.
-contr_GBS_GBSrec <- as.data.frame(results(dds, contrast=c('condition','GBS','REC')))
+contr_GBS_GBSrec <- as.data.frame(results(dds, contrast=c('condition','GBS','GBS_REC')))
 
 ###----------------------- GSEA - Arquivo 1 ---------------------
 # Criar csv para fgsea para contr_GBS_GBSrec:
@@ -151,3 +151,4 @@ with(subset(subset(as.data.frame(contr_GBS_GBSrec), padj <= 0.05), log2FoldChang
 abline(h=1.3,col="green", lty = 2, cex= 3)
 abline(v=1,col="green", lty = 2, cex= 3)
 abline(v=-1,col="green", lty = 2, cex= 3)
+
