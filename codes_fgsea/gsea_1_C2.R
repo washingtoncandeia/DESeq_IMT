@@ -24,6 +24,7 @@ ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
 
 # B. Criar a coluna de símbolos a partir dos IDs Ensembl, da primeira coluna.
 ens2symbol <- as_tibble(ens2symbol)
+ens2symbol
 
 # C. Confirmar:
 head(ens2symbol, 10)
@@ -39,7 +40,9 @@ res2 <- res %>%
   dplyr::select(SYMBOL, stat) %>% 
   na.omit() %>% 
   distinct() %>%  
-  group_by(SYMBOL) 
+  group_by(SYMBOL) %>% 
+  summarize(stat=mean(stat))
+res2
 
 # G. Confirmando:
 head(res2, 10)
@@ -49,7 +52,7 @@ summary(res2)
 # A. A função fgsea requer uma lista de conjunto de genes para checar, e
 # um vetor nomeado de estatísticas em nível gênico.
 ranks <- tibble::deframe(res2)
-head(ranks)
+head(ranks, 20)
 
 # B. Carregar as vias em uma lista de nomes a partir do MSigDB.
 # Análise 1: H
@@ -64,7 +67,7 @@ pathways.GObp %>%
   lapply(head)
 
 # E. Usando a função fgsea
-fgseaRes <- fgsea(pathways=pathways.GObp, stats=ranks, nperm=10000)
+fgseaRes <- fgsea(pathways=pathways.GObp, stats=ranks, nperm=1000)
 
 # F. Verificar
 head(fgseaRes, 3)
@@ -105,18 +108,15 @@ topPathwaysDown
 
 # Plots de vias específicas.
 # Up:
-plotEnrichment(pathways.GObp[["GO_REGULATION_OF_TRANSPORT"]],
-               stats=ranks) + labs(title='8-GO_REGULATION_OF_TRANSPORT')
+plotEnrichment(pathways.GObp[["KEGG_HEDGEHOG_SIGNALING_PATHWAY"]],
+               stats=ranks) + labs(title="KEGG_HEDGEHOG_SIGNALING_PATHWAY")
 
-plotEnrichment(pathways.GObp[["GO_NEUROGENESIS"]],
-               stats=ranks) + labs(title="6-GO_NEUROGENESIS" )
+plotEnrichment(pathways.GObp[["KEGG_RIG_I_LIKE_RECEPTOR_SIGNALING_PATHWAY"]],
+               stats=ranks) + labs(title="KEGG_RIG_I_LIKE_RECEPTOR_SIGNALING_PATHWAY")
 
 # Down:
-plotEnrichment(pathways.GObp[["GO_REGULATION_OF_TELOMERASE_RNA_LOCALIZATION_TO_CAJAL_BODY"]],
-               stats=ranks) + labs(title="GO_REGULATION_OF_TELOMERASE_RNA_LOCALIZATION_TO_CAJAL_BODY"  )
+plotEnrichment(pathways.GObp[[ "KEGG_ALZHEIMERS_DISEASE"]],
+               stats=ranks) + labs(title= "KEGG_ALZHEIMERS_DISEASE" )
 
-
-plotEnrichment(pathways.GObp[["GO_POSITIVE_REGULATION_OF_VIRAL_TRANSCRIPTION"]],
-               stats=ranks) + labs(title="GO_POSITIVE_REGULATION_OF_VIRAL_TRANSCRIPTION")
 
 

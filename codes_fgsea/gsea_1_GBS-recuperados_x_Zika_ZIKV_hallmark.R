@@ -17,6 +17,7 @@ library(DT)
 ## 1. Criar coluna SYMBOL contendo símbolos dos genes 
 #  associados aos IDs Ensembl.
 res <- read_csv('tab/contr_1_GBS-recuperados_x_Zika_GSEA_2019.csv')
+res
 
 # A. Anotações dos símbolos a partir do Ensembl.
 ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
@@ -26,6 +27,7 @@ ens2symbol <- AnnotationDbi::select(org.Hs.eg.db,
 
 # B. Criar a coluna de símbolos a partir dos IDs Ensembl, da primeira coluna.
 ens2symbol <- as_tibble(ens2symbol)
+ens2symbol
 
 # C. Confirmar:
 head(ens2symbol, 10)
@@ -41,19 +43,21 @@ res2 <- res %>%
   dplyr::select(SYMBOL, stat) %>% 
   na.omit() %>% 
   distinct() %>%  
-  group_by(SYMBOL) 
-
+  group_by(SYMBOL) %>% 
+  summarize(stat=mean(stat))
+res2
 # G. Confirmando:
 head(res2, 10)
+summary(res2)
 
 ## 2. Usando do fgsea.
 # A. A função fgsea requer uma lista de conjunto de genes para checar, e
 # um vetor nomeado de estatísticas em nível gênico.
 ranks <- tibble::deframe(res2)
-head(ranks)
+head(ranks, 20)
 
 # B. Carregar as vias em uma lista de nomes a partir do MSigDB.
-# Análise 1: H
+# Análise 1: H (Estados biológicos ou processos bem definidos)
 pathways.hallmark <- gmtPathways('symbols/h.all.v7.0.symbols.gmt')
 
 # C. Se quiser ver todos de uma vez, descomente abaixo (alternativa)
@@ -65,7 +69,7 @@ pathways.hallmark %>%
   lapply(head)
 
 # E. Usando a função fgsea
-fgseaRes <- fgsea(pathways=pathways.hallmark, stats=ranks, nperm=10000)
+fgseaRes <- fgsea(pathways=pathways.hallmark, stats=ranks, nperm=1000)
 
 # F. Verificar
 head(fgseaRes, 3)

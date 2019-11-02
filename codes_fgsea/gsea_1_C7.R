@@ -39,7 +39,9 @@ res2 <- res %>%
   dplyr::select(SYMBOL, stat) %>% 
   na.omit() %>% 
   distinct() %>%  
-  group_by(SYMBOL) 
+  group_by(SYMBOL) %>% 
+  summarize(stat=mean(stat))
+res2 
 
 # G. Confirmando:
 head(res2, 10)
@@ -64,7 +66,7 @@ pathways.c7 %>%
   lapply(head)
 
 # E. Usando a função fgsea
-fgseaRes <- fgsea(pathways=pathways.c7, stats=ranks, nperm=10000)
+fgseaRes <- fgsea(pathways=pathways.c7, stats=ranks, nperm=1000)
 
 # F. Verificar
 head(fgseaRes, 3)
@@ -105,18 +107,14 @@ topPathwaysDown
 
 # Plots de vias específicas.
 # Up:
-plotEnrichment(pathways.c7[["GO_REGULATION_OF_TRANSPORT"]],
-               stats=ranks) + labs(title='8-GO_REGULATION_OF_TRANSPORT')
+plotEnrichment(pathways.c7[["GSE45365_WT_VS_IFNAR_KO_CD11B_DC_MCMV_INFECTION_DN" ]],
+               stats=ranks) + labs(title="WT_VS_IFNAR_KO_CD11B_DC_MCMV_INFECTION_DN")
 
 plotEnrichment(pathways.c7[["GO_NEUROGENESIS"]],
                stats=ranks) + labs(title="6-GO_NEUROGENESIS" )
 
 # Down:
-plotEnrichment(pathways.c7[["GO_REGULATION_OF_TELOMERASE_RNA_LOCALIZATION_TO_CAJAL_BODY"]],
-               stats=ranks) + labs(title="GO_REGULATION_OF_TELOMERASE_RNA_LOCALIZATION_TO_CAJAL_BODY"  )
-
-
-plotEnrichment(pathways.c7[["GO_POSITIVE_REGULATION_OF_VIRAL_TRANSCRIPTION"]],
-               stats=ranks) + labs(title="GO_POSITIVE_REGULATION_OF_VIRAL_TRANSCRIPTION")
+plotEnrichment(pathways.c7[["GSE1791_CTRL_VS_NEUROMEDINU_IN_T_CELL_LINE_12H_DN" ]],
+               stats=ranks) + labs(title="GSE1791_CTRL_VS_NEUROMEDINU_IN_T_CELL_LINE_12H_DN" )
 
 
